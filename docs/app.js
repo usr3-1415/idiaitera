@@ -195,7 +195,7 @@
   const els = {
     balance: $('#balance'), syncStatus: $('#sync-status'), refreshBtn: $('#refresh-btn'), settingsBtn: $('#settings-btn'),
     viewEntry: $('#view-entry'), viewHistory: $('#view-history'), tabs: document.querySelectorAll('.tabbar button'),
-    presets: $('#presets'), form: $('#entry-form'), editBanner: $('#edit-banner'), cancelEdit: $('#cancel-edit'),
+    presets: $('#presets'), presetsBlock: $('#presets-block'), form: $('#entry-form'), editBanner: $('#edit-banner'), cancelEdit: $('#cancel-edit'),
     typeSeg: $('#type-seg'), category: $('#category'), categoryField: $('#category-field'),
     amount: $('#amount'), date: $('#date'), bySeg: $('#by-seg'), notes: $('#notes'),
     formError: $('#form-error'), submitBtn: $('#submit-btn'), deleteBtn: $('#delete-btn'),
@@ -255,11 +255,12 @@
 
   els.presets.innerHTML = PRESETS.map((p, i) => `
     <button type="button" class="preset ${p.type === 'DEPOSIT' ? 'deposit' : 'expense'}" data-preset="${i}">
-      <span class="p-cat">${esc(p.label || p.category)}</span>
-      <span class="p-amt">${p.type === 'DEPOSIT' ? '+' : '−'}${esc(money(p.amount))}</span>
+      <span class="p-sign" aria-hidden="true">${p.type === 'DEPOSIT' ? '+' : '−'}</span>
+      <span class="p-text"><span class="p-cat">${esc(p.label || p.category)}</span><span class="p-amt">${esc(money(p.amount))}</span></span>
     </button>`).join('') + `
     <button type="button" class="preset custom" data-preset="custom">
-      <span class="p-cat">Άλλο ποσό</span><span class="p-amt">Custom</span>
+      <span class="p-sign" aria-hidden="true">…</span>
+      <span class="p-text"><span class="p-cat">Άλλο</span><span class="p-amt">δικό σου ποσό</span></span>
     </button>`;
 
   function renderCategoryOptions(type, selected) {
@@ -394,7 +395,7 @@
     setForm(tx);
     els.editBanner.hidden = false;
     els.deleteBtn.hidden = false;
-    els.presets.hidden = true;
+    els.presetsBlock.hidden = true;
     els.submitBtn.textContent = 'Αποθήκευση αλλαγών';
     switchTab('entry');
   }
@@ -403,7 +404,7 @@
     state.editingId = null;
     els.editBanner.hidden = true;
     els.deleteBtn.hidden = true;
-    els.presets.hidden = false;
+    els.presetsBlock.hidden = false;
     els.submitBtn.textContent = 'Καταχώρηση';
     setForm({ type: 'EXPENSE' });
     refreshDefaultAmount();

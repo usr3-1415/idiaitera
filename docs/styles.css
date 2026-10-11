@@ -96,31 +96,42 @@ main {
 }
 
 /* ---------- Presets ---------- */
+.section-label { margin: 0 4px 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.section-label span { font-weight: 400; }
 .presets {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 .preset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 60px;
+  padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
-  padding: 14px 12px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .08);
   text-align: left;
-  min-height: 64px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  white-space: nowrap;
 }
-.preset .p-cat { font-weight: 650; }
-.preset .p-amt { font-size: 15px; font-variant-numeric: tabular-nums; }
-.preset.deposit { grid-column: 1 / -1; background: var(--plus-bg); border-color: transparent; }
-.preset.deposit .p-amt { color: var(--plus); font-weight: 700; }
-.preset.expense .p-amt { color: var(--minus); }
-.preset.custom { color: var(--muted); }
+.p-sign {
+  flex: none;
+  display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 18px; font-weight: 700; line-height: 1;
+  background: var(--minus-bg); color: var(--minus);
+}
+.p-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.p-cat { font-weight: 650; overflow: hidden; text-overflow: ellipsis; }
+.p-amt { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.preset.deposit { grid-column: 1 / -1; }
+.preset.deposit .p-sign { background: var(--plus-bg); color: var(--plus); }
+.preset.custom .p-sign { background: var(--bg); color: var(--muted); }
 .preset:active { transform: scale(.98); }
-.preset.selected { outline: 2px solid var(--brand); outline-offset: -2px; }
+.preset.selected { border-color: var(--brand); outline: 1px solid var(--brand); }
 
 /* ---------- Form ---------- */
 .field { display: block; margin-bottom: 14px; min-width: 0; }
