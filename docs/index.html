@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ταμείο Ιδιαίτερων</title>
+  <meta name="description" content="Καταθέσεις και πληρωμές ιδιαίτερων μαθημάτων">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ταμείο">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <span class="top-label">Τρέχον υπόλοιπο</span>
+      <div class="top-actions">
+        <button id="refresh-btn" class="icon-btn" type="button" aria-label="Ανανέωση">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>
+        </button>
+        <button id="settings-btn" class="icon-btn" type="button" aria-label="Ρυθμίσεις">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="balance" class="balance">—</div>
+    <div id="sync-status" class="sync-status" aria-live="polite"></div>
+  </header>
+
+  <main>
+    <section id="view-entry" class="view">
+      <div id="presets" class="presets"></div>
+
+      <form id="entry-form" class="card" novalidate autocomplete="off">
+        <div id="edit-banner" class="edit-banner" hidden>
+          <strong>Επεξεργασία κίνησης</strong>
+          <button type="button" id="cancel-edit" class="link-btn">Άκυρο</button>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Είδος</span>
+          <div class="segmented" id="type-seg" role="radiogroup">
+            <button type="button" data-value="DEPOSIT" role="radio">Κατάθεση</button>
+            <button type="button" data-value="EXPENSE" role="radio">Πληρωμή</button>
+          </div>
+        </div>
+
+        <label class="field" id="category-field">
+          <span class="field-label">Μάθημα / Αιτιολογία</span>
+          <select id="category"></select>
+        </label>
+
+        <div class="row2">
+          <label class="field">
+            <span class="field-label">Ποσό (€)</span>
+            <input id="amount" type="text" inputmode="decimal" placeholder="0,00" enterkeyhint="done">
+          </label>
+          <label class="field">
+            <span class="field-label">Ημερομηνία</span>
+            <input id="date" type="date" required>
+          </label>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Καταχωρητής</span>
+          <div class="segmented" id="by-seg" role="radiogroup"></div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Σημειώσεις</span>
+          <input id="notes" type="text" maxlength="500" placeholder="προαιρετικό" enterkeyhint="done">
+        </label>
+
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <button type="submit" class="primary" id="submit-btn">Καταχώρηση</button>
+        <button type="button" class="danger-btn" id="delete-btn" hidden>Διαγραφή κίνησης</button>
+      </form>
+    </section>
+
+    <section id="view-history" class="view" hidden>
+      <div class="filters">
+        <select id="filter-month" aria-label="Μήνας"></select>
+        <select id="filter-category" aria-label="Κατηγορία"></select>
+      </div>
+      <div id="summary" class="summary"></div>
+      <ul id="tx-list" class="tx-list"></ul>
+      <p id="empty" class="empty" hidden>Δεν υπάρχουν κινήσεις.</p>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button type="button" data-tab="entry" class="active">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+      Νέα κίνηση
+    </button>
+    <button type="button" data-tab="history">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
+      Ιστορικό
+    </button>
+  </nav>
+
+  <dialog id="settings-dialog">
+    <form id="settings-form" novalidate autocomplete="off">
+      <h2>Ρυθμίσεις</h2>
+      <div class="field">
+        <span class="field-label">Ποιος είσαι;</span>
+        <div class="segmented" id="me-seg" role="radiogroup"></div>
+      </div>
+      <label class="field">
+        <span class="field-label">PIN</span>
+        <input id="pin" type="password" inputmode="numeric" autocomplete="current-password">
+      </label>
+      <details id="api-details">
+        <summary>Σύνδεση με Google Sheet</summary>
+        <label class="field">
+          <span class="field-label">URL του Apps Script (τελειώνει σε /exec)</span>
+          <input id="api-url" type="url" placeholder="https://script.google.com/macros/s/…/exec">
+        </label>
+      </details>
+      <p id="settings-error" class="form-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" id="settings-cancel" class="link-btn">Κλείσιμο</button>
+        <button type="submit" class="primary" id="settings-save">Αποθήκευση</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" hidden>
+    <span id="toast-text"></span>
+    <button type="button" id="toast-action" class="link-btn" hidden></button>
+  </div>
+</body>
+</html>
